@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{margin: 0; padding: 0;}
+        #ball{
+            border-radius: 100%;
+            width: 50px;
+            height: 50px;
+            background-color: #000;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="ball" style="top: 0px;left: 0px;"></div>
+    <script>
+        const ball = document.querySelector('#ball');
+        let downFlag = true;
+        const speed = 5;
+        let batData = {
+            width: 0,
+            height: 0,
+            x: 0,
+            y: 0,
+        }
+
+        let ballData = {
+            width: 50,
+            height: 50,
+            x: 0,
+            y: 0,
+        }
+
+        const broadcastChannel = new BroadcastChannel("ball");
+        broadcastChannel.onmessage = (event) => {
+            //console.log(event.data);
+            batData = event.data;
+            //broadcastChannel.postMessage(event.data);
+        }
+
+        function getRandomX(){
+            return Math.floor(Math.random() * window.outerWidth);
+        }
+
+        function isOnBat(){
+            return ballData.y + ballData.height >= batData.y && ballData.y <= batData.y + batData.height
+                && ballData.x + ballData.width >= batData.x && ballData.x <= batData.x + batData.width;
+        }
+
+        function move(){
+            if(isOnBat()){
+                downFlag = false;
+            }
+            const distance =  downFlag ? speed : -speed; 
+            ballData.y += distance;
+            if(ballData.y >= window.outerHeight || ballData.y < 0){
+                ballData.y = 0;
+                ballData.x = getRandomX();
+                ball.style.left = ballData.x + 'px';
+                downFlag = true;
+            }
+            ball.style.top = ballData.y + 'px';
+            
+            requestAnimationFrame(move);
+        }
+        requestAnimationFrame(move);
+    </script>
+</body>
+</html>

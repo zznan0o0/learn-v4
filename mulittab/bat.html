@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{margin: 0; padding: 0;}
+        body{width: 100%; height: 100%; background-color: black;}
+    </style>
+</head>
+<body>
+    <script>
+        let curBatData = {
+            width: 0,
+            height: 0,
+            x: 0,
+            y: 0,
+        }
+        const broadcastChannel = new BroadcastChannel("ball");
+        function getCurInfo(){
+            return {
+                width: window.outerWidth,
+                height: window.outerHeight,
+                x: window.screenX,
+                y: window.screenY,
+            }
+        }
+
+        reportData = () => {
+            //console.log(getCurInfo())
+            const curInfo = getCurInfo();
+            if(curBatData.x != curInfo.x || curBatData.y != curInfo.y || curBatData.width != curInfo.width || curBatData.height != curInfo.height){
+                curBatData = curInfo;
+                broadcastChannel.postMessage(curBatData);
+            }
+            requestAnimationFrame(reportData);
+        }
+        reportData()
+
+
+    </script>
+</body>
+</html>
